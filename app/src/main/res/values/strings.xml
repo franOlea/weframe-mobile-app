@@ -1,3 +1,9 @@
 <resources>
-    <string name="app_name">WeFrameAndroidClient</string>
+    <string name="app_name">WeFrame</string>
+    <string name="password">Password</string>
+    <string name="email">Email</string>
+    <string name="ingresar">Ingresar</string>
+    <string name="session_email">session-email</string>
+    <string name="session_token">session-token</string>
+    <string name="session_shared_preferences_file">session-shared-preferences</string>
 </resources>
