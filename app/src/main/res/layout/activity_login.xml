@@ -15,6 +15,7 @@
         android:layout_marginTop="16dp"
         android:ems="10"
         android:hint="@string/password"
+        android:text="password"
         android:inputType="textPassword"
         app:layout_constraintHorizontal_bias="0.503"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -30,6 +31,7 @@
         android:layout_marginTop="16dp"
         android:ems="10"
         android:hint="@string/email"
+        android:text="email@gmail.com"
         android:inputType="textEmailAddress"
         app:layout_constraintHorizontal_bias="0.503"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -44,6 +46,7 @@
         android:layout_marginRight="16dp"
         android:layout_marginTop="16dp"
         android:text="@string/ingresar"
+        android:onClick="logIn"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/loginPasswordField" />

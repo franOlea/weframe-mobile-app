@@ -8,13 +8,14 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import weframe.com.weframeandroidclient.R;
+import weframe.com.weframeandroidclient.login.LoginActivity;
 
 public class SpashScreenActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_spash_screen);
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {

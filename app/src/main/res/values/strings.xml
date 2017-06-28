@@ -6,4 +6,6 @@
     <string name="session_email">session-email</string>
     <string name="session_token">session-token</string>
     <string name="session_shared_preferences_file">session-shared-preferences</string>
+    <string name="images">Images</string>
+    <string name="images_uploaded">Imagenes subidas</string>
 </resources>
