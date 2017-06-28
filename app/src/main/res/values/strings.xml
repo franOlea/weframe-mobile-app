@@ -8,4 +8,6 @@
     <string name="session_shared_preferences_file">session-shared-preferences</string>
     <string name="images">Images</string>
     <string name="images_uploaded">Imagenes subidas</string>
+    <string name="take_picture">Sacar foto</string>
+    <string name="settings">Configuracion</string>
 </resources>
