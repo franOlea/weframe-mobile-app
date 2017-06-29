@@ -10,4 +10,5 @@
     <string name="images_uploaded">Imagenes subidas</string>
     <string name="take_picture">Sacar foto</string>
     <string name="settings">Configuracion</string>
+    <string name="image_thumbnail">image-thumbnail</string>
 </resources>
