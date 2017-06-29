@@ -1,10 +1,8 @@
 package weframe.com.weframeandroidclient;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
@@ -19,10 +17,10 @@ import android.widget.TabHost;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.List;
 
+import weframe.com.weframeandroidclient.picture.LocalPicturesManager;
 import weframe.com.weframeandroidclient.picture.Picture;
 import weframe.com.weframeandroidclient.picture.PictureGalleryAdapter;
 
@@ -30,13 +28,18 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int REQUEST_IMAGE_CAPTURE = 1;
 
+    private PictureGalleryAdapter adapter;
+    private LocalPicturesManager localPicturesManager;
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         initToolbar();
         initTabs();
+        initAdapter();
+        initLocalGallery();
     }
 
     private void initToolbar() {
@@ -66,48 +69,75 @@ public class MainActivity extends AppCompatActivity {
         });
 
         tabs.setCurrentTab(0);
-        loadLocalGallery();
     }
 
-    private void doOnTabChanged(String tabId) {
-        Log.i("TAG CHANGED", "tabId: " + tabId);
-        if(tabId.equals("Imagenes locales")) {
-            loadLocalGallery();
-        }
+    private void initAdapter() {
+        adapter = new PictureGalleryAdapter(new ArrayList<Picture>());
     }
 
-    private void loadLocalGallery() {
-        Log.i("LOCAL GALLERY", "LOADING...");
+    private void initLocalGallery() {
+        localPicturesManager = new LocalPicturesManager(this);
+
         RecyclerView recyclerView = (RecyclerView)findViewById(R.id.imagegallery);
         recyclerView.setHasFixedSize(true);
 
         RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getApplicationContext(), 2);
         recyclerView.setLayoutManager(layoutManager);
-        ArrayList<Picture> list = prepareData();
-        PictureGalleryAdapter adapter = new PictureGalleryAdapter(getApplicationContext(), list);
         recyclerView.setAdapter(adapter);
-        Log.i("LOCAL GALLERY", "LOADED");
+        triggerLocalGallery();
     }
 
-    private ArrayList<Picture> prepareData() {
-        Log.i("LOCAL GALLERY", "LOADING DATA...");
-        ArrayList<Picture> pictures = new ArrayList<>();
-        File dir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        if (dir != null) {
-            File[] listOfFiles = dir.listFiles();
-            for (File file : listOfFiles) {
-                if (file.isFile()) {
-                    Log.i("LOADING FILE", file.getAbsolutePath());
-                    pictures.add(new Picture(file));
-                }
+    private void doOnTabChanged(String tabId) {
+        Log.i(this.getClass().getName(), "tabId: " + tabId);
+        if(tabId.equals("Imagenes locales")) {
+            triggerLocalGallery();
+        }
+    }
+
+    private void dispatchTakePictureIntent() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            try {
+                File photoFile = localPicturesManager.createImageFile();
+                Uri photoURI = FileProvider.getUriForFile(
+                        this,
+                        "weframe.com.weframeandroidclient",
+                        photoFile
+                );
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+            } catch (IOException ex) {
+                Log.e("ERROR CREATING FILE", "There was an error creating the image file.", ex);
             }
         }
-        Log.i("LOCAL GALLERY", "DATA LOADED");
-        return pictures;
+    }
+
+    private void triggerLocalGallery() {
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... params) {
+                final List<Picture> list = localPicturesManager.loadLocalPictures();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        adapter.updateData(list);
+                    }
+                });
+                return null;
+            }
+        }.execute();
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            Log.i("CAMERA INTENT RESULT", "Camera picture taken and stored. Refreshing list...");
+            triggerLocalGallery();
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(final Menu menu) {
         getMenuInflater().inflate(R.menu.menu, menu);
         return true;
     }
@@ -124,53 +154,5 @@ public class MainActivity extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
-    }
-
-    private void dispatchTakePictureIntent() {
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-            // Create the File where the photo should go
-            try {
-                File photoFile = createImageFile();
-                Uri photoURI = FileProvider.getUriForFile(
-                        this,
-                        "weframe.com.weframeandroidclient",
-                        photoFile
-                );
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-            } catch (IOException ex) {
-                // Error occurred while creating the File
-                Log.e("ERROR CREATING FILE", "", ex);
-            }
-        }
-    }
-
-//    @Override
-//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-//            Bundle extras = data.getExtras();
-//            Bitmap imageBitmap = (Bitmap) extras.get("data");
-//            if(imageBitmap != null) {
-//                Log.i("CAMERA", "PICTRUE TAKEN SIZE " + imageBitmap.getByteCount());
-//            }
-////            mImageView.setImageBitmap(imageBitmap);
-//        }
-//    }
-
-    private File createImageFile() throws IOException {
-        // Create an image file name
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "JPEG_" + timeStamp + "_";
-        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        File image = File.createTempFile(
-                imageFileName,  /* prefix */
-                ".jpg",         /* suffix */
-                storageDir      /* directory */
-        );
-
-        // Save a file: path for use with ACTION_VIEW intents
-//        image.getAbsolutePath();
-        return image;
     }
 }

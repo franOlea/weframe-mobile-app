@@ -11,4 +11,6 @@
     <string name="take_picture">Sacar foto</string>
     <string name="settings">Configuracion</string>
     <string name="image_thumbnail">image-thumbnail</string>
+    <string name="remove">Eliminar</string>
+    <string name="upload">Subir</string>
 </resources>
