@@ -31,7 +31,7 @@
         android:layout_marginTop="16dp"
         android:ems="10"
         android:hint="@string/email"
-        android:text="email@gmail.com"
+        android:text="email@gmail.com.ar"
         android:inputType="textEmailAddress"
         app:layout_constraintHorizontal_bias="0.503"
         app:layout_constraintLeft_toLeftOf="parent"

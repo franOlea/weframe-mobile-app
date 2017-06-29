@@ -1,7 +1,9 @@
-package weframe.com.weframeandroidclient.picture;
+package weframe.com.weframeandroidclient.picture.local;
 
 import android.util.Log;
 import android.view.View;
+
+import weframe.com.weframeandroidclient.picture.local.model.PictureViewHolder;
 
 class DeleteButtonPressedListener implements View.OnClickListener {
 

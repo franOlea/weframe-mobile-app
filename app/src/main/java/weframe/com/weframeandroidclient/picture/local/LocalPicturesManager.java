@@ -1,4 +1,4 @@
-package weframe.com.weframeandroidclient.picture;
+package weframe.com.weframeandroidclient.picture.local;
 
 import android.content.Context;
 import android.os.Environment;
@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+
+import weframe.com.weframeandroidclient.picture.local.model.Picture;
 
 public class LocalPicturesManager {
 

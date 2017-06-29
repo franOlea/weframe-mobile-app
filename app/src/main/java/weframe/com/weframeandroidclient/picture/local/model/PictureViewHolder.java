@@ -1,4 +1,4 @@
-package weframe.com.weframeandroidclient.picture;
+package weframe.com.weframeandroidclient.picture.local.model;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -9,7 +9,7 @@ import java.io.File;
 
 import weframe.com.weframeandroidclient.R;
 
-class PictureViewHolder extends RecyclerView.ViewHolder {
+public class PictureViewHolder extends RecyclerView.ViewHolder {
 
     private final ImageView imageView;
     private final Button removeButton;
@@ -17,7 +17,7 @@ class PictureViewHolder extends RecyclerView.ViewHolder {
 
     private File file;
 
-    PictureViewHolder(View view) {
+    public PictureViewHolder(View view) {
         super(view);
         this.imageView = (ImageView) view.findViewById(R.id.img);
         this.removeButton = (Button) view.findViewById(R.id.removeButton);
@@ -32,15 +32,15 @@ class PictureViewHolder extends RecyclerView.ViewHolder {
         return file;
     }
 
-    ImageView getImageView() {
+    public ImageView getImageView() {
         return imageView;
     }
 
-    Button getRemoveButton() {
+    public Button getRemoveButton() {
         return removeButton;
     }
 
-    Button getUploadButton() {
+    public Button getUploadButton() {
         return uploadButton;
     }
 }

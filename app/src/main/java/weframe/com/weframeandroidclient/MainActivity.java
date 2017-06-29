@@ -3,6 +3,7 @@ package weframe.com.weframeandroidclient;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
@@ -14,22 +15,28 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TabHost;
+import android.widget.Toast;
+
+import org.springframework.web.client.RestTemplate;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import weframe.com.weframeandroidclient.picture.LocalPicturesManager;
-import weframe.com.weframeandroidclient.picture.Picture;
-import weframe.com.weframeandroidclient.picture.PictureGalleryAdapter;
+import weframe.com.weframeandroidclient.picture.RemotePicturesManager;
+import weframe.com.weframeandroidclient.picture.local.LocalPicturesManager;
+import weframe.com.weframeandroidclient.picture.local.model.Picture;
+import weframe.com.weframeandroidclient.picture.local.PictureGalleryAdapter;
 
 public class MainActivity extends AppCompatActivity {
+    private Boolean exit = false;
 
     private static final int REQUEST_IMAGE_CAPTURE = 1;
 
     private PictureGalleryAdapter adapter;
     private LocalPicturesManager localPicturesManager;
+    private RemotePicturesManager remotePicturesManager;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -38,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
 
         initToolbar();
         initTabs();
+        initPictureManagers();
         initAdapter();
         initLocalGallery();
     }
@@ -72,12 +80,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initAdapter() {
-        adapter = new PictureGalleryAdapter(new ArrayList<Picture>());
+        adapter = new PictureGalleryAdapter(getApplicationContext(), new ArrayList<Picture>(), remotePicturesManager);
+    }
+
+    private void initPictureManagers() {
+        localPicturesManager = new LocalPicturesManager(this);
+        remotePicturesManager = new RemotePicturesManager();
     }
 
     private void initLocalGallery() {
-        localPicturesManager = new LocalPicturesManager(this);
-
         RecyclerView recyclerView = (RecyclerView)findViewById(R.id.imagegallery);
         recyclerView.setHasFixedSize(true);
 
@@ -153,6 +164,22 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(exit) {
+            finish();
+        } else {
+            Toast.makeText(this, "Press back again to exit.", Toast.LENGTH_SHORT).show();
+            exit = true;
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    exit = false;
+                }
+            }, 3000);
         }
     }
 }

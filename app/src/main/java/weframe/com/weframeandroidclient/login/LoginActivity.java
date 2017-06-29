@@ -1,8 +1,6 @@
 package weframe.com.weframeandroidclient.login;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -11,10 +9,11 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import weframe.com.weframeandroidclient.AsyncOperationRequestListener;
 import weframe.com.weframeandroidclient.MainActivity;
 import weframe.com.weframeandroidclient.R;
 
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity implements AsyncOperationRequestListener {
     private static final String EMPTY_STRING = "";
 
     private LoginAuthenticator loginAuthenticator;
@@ -29,7 +28,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        loginAuthenticator = new FakeLoginAuthenticator();
+        loginAuthenticator = new RestLoginAuthenticator();
 
         emailField = (EditText) findViewById(R.id.loginEmailField);
         passwordField = (EditText) findViewById(R.id.loginPasswordField);
@@ -55,7 +54,6 @@ public class LoginActivity extends AppCompatActivity {
         String email = emailField.getText().toString();
         String password = passwordField.getText().toString();
 
-        try {
             Log.v(
                     "LoginAuthenticator",
                     String.format(
@@ -63,13 +61,22 @@ public class LoginActivity extends AppCompatActivity {
                             email
                     )
             );
-            String token = loginAuthenticator.attemptAuthentication(email, password);
-            storeSessionData(email, token);
+            loginAuthenticator.attemptAuthentication(email, password, this);
+    }
+
+    @Override
+    public void onComplete(boolean success) {
+        if(success) {
             goToMainMenu();
-        } catch (InvalidLoginException e) {
-            displayErrorToast(e.getMessage());
-            resetFields();
+        } else {
+            displayErrorToast("Login invalido.");
         }
+    }
+
+    @Override
+    public void onError(Throwable throwable) {
+        displayErrorToast(throwable.getMessage());
+        resetFields();
     }
 
     private void displayErrorToast(String message) {
@@ -88,17 +95,6 @@ public class LoginActivity extends AppCompatActivity {
     private void resetFields() {
         emailField.setText(EMPTY_STRING);
         passwordField.setText(EMPTY_STRING);
-    }
-
-    private void storeSessionData(final String email, final String token) {
-        SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences(
-                getString(R.string.session_shared_preferences_file),
-                Context.MODE_PRIVATE
-        );
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(getString(R.string.session_email), email);
-        editor.putString(getString(R.string.session_token), token);
-        editor.apply();
     }
 
 }

@@ -1,5 +1,9 @@
 package weframe.com.weframeandroidclient.login;
 
+import weframe.com.weframeandroidclient.AsyncOperationRequestListener;
+
 public interface LoginAuthenticator {
-    String attemptAuthentication(final String email, final String password) throws InvalidLoginException;
+    void attemptAuthentication(final String email,
+                                  final String password,
+                                  final AsyncOperationRequestListener listener);
 }

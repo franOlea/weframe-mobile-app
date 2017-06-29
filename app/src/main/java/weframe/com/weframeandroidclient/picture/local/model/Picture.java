@@ -1,4 +1,4 @@
-package weframe.com.weframeandroidclient.picture;
+package weframe.com.weframeandroidclient.picture.local.model;
 
 import java.io.File;
 
