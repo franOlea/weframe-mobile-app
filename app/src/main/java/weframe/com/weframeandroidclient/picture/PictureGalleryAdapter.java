@@ -30,6 +30,17 @@ public class PictureGalleryAdapter extends RecyclerView.Adapter<PictureViewHolde
         notifyDataSetChanged();
     }
 
+    public void remove(final PictureViewHolder pictureViewHolder) {
+        this.list.remove(pictureViewHolder.getAdapterPosition());
+        notifyItemRemoved(pictureViewHolder.getAdapterPosition());
+        Log.i(this.getClass().getName(), "Picture view holder removed.");
+    }
+
+    public void add(final Picture picture) {
+        this.list.add(picture);
+        notifyItemInserted(this.list.size() - 1);
+    }
+
     @Override
     public PictureViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
         View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.image_thumbnail, viewGroup, false);
@@ -39,6 +50,7 @@ public class PictureGalleryAdapter extends RecyclerView.Adapter<PictureViewHolde
     @Override
     public void onBindViewHolder(final PictureViewHolder viewHolder, final int i) {
         viewHolder.getImageView().setScaleType(ImageView.ScaleType.CENTER_CROP);
+        viewHolder.setFile(list.get(i).getFile());
         viewHolder.getImageView().setImageBitmap(getPictureByFile(list.get(i).getFile()));
         viewHolder.getRemoveButton().setOnClickListener(new DeleteButtonPressedListener(this, viewHolder, i));
         viewHolder.getUploadButton().setOnClickListener(new UploadButtonPressedListener(this, viewHolder, i));

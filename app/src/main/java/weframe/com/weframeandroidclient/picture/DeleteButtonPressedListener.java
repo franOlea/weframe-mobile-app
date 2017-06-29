@@ -22,6 +22,12 @@ class DeleteButtonPressedListener implements View.OnClickListener {
         Log.d("DELETED_BUTTON_PRESSED " + index,
                 String.format("position = %d, holder_adapter_position = %d, size = %d",
                         index, pictureViewHolder.getAdapterPosition(), pictureGalleryAdapter.getItemCount()));
-
+        pictureGalleryAdapter.remove(pictureViewHolder);
+        if(pictureViewHolder.getFile() != null) {
+            boolean succeess = pictureViewHolder.getFile().delete();
+            Log.i("PICTURE_DELETED", "The picture file has been deleted " + succeess);
+        } else {
+            Log.i("PICTURE_NOT_DELETED", "The picture file has NOT been deleted ");
+        }
     }
 }
